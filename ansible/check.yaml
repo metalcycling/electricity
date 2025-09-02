@@ -1,0 +1,10 @@
+- name: Check the liveness of the cluster
+  hosts: all
+  become: true
+  tasks:
+    - shell:
+        cmd: "echo \"Node '$(hostname)' is online\""
+      register: nodes
+
+    - debug:
+        var: nodes.stdout

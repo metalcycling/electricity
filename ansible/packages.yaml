@@ -1,0 +1,27 @@
+- name: Setup all node packages
+  hosts: all
+  become: true
+  tasks:
+    - shell:
+        cmd: "sed -i \"/nrconf{restart}/c\\$nrconf{restart} = 'a';\" /etc/needrestart/needrestart.conf"
+
+    - apt:
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+
+    - apt:
+        upgrade: dist
+        force_apt_get: yes
+
+    - apt:
+        pkg:
+          - vim
+          - screen
+          - curl
+          - wget
+          - git
+          - jq
+          - tree
+          - python3
+          - pip

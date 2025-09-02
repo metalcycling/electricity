@@ -1,0 +1,25 @@
+- name: Start application
+  hosts: all
+  become: true
+  tasks:
+    - name: Create application folder
+      file:
+        dest: "/root/Application"
+        state: directory
+
+    - name: Copy application files
+      copy:
+        src: "{{ item }}"
+        dest: "/root/Application"
+      loop:
+        - ../application/requirements.txt
+        - ../application/energy_consumption.py
+        - ../application/keys.json
+
+    - name: Install Python packages
+      shell:
+        cmd: "pip install --requirement /root/Application/requirements.txt"
+
+#   - name: Start collecting energy measurments TODO: Have to start directly on the node for some reason
+#     shell:
+#       cmd: "python3 /root/Application/energy_consumption.py 2>&1 /dev/null"

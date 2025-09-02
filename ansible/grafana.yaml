@@ -1,0 +1,19 @@
+- name: Install Grafana
+  hosts: all
+  become: true
+  vars:
+    grafana: "grafana-enterprise-11.4.0.linux-amd64"
+  tasks:
+    - name: Download and untar file
+      unarchive:
+        src: "https://dl.grafana.com/enterprise/release/{{ grafana }}.tar.gz"
+        dest: "/root/Programs"
+        remote_src: yes
+
+    - name: Rename directory
+      shell:
+        cmd: "mv /root/Programs/grafana-v11.4.0 /root/Programs/Grafana"
+
+#   - name: Start Grafana server TODO: Have to start directly on the node for some reason
+#     shell:
+#       cmd: "/root/Programs/Grafana/bin/grafana server &"

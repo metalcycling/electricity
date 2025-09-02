@@ -1,0 +1,25 @@
+- name: Install Prometheus
+  hosts: all
+  become: true
+  vars:
+    prometheus: "prometheus-3.1.0.linux-amd64"
+  tasks:
+    - name: Download and untar file
+      unarchive:
+        src: "https://github.com/prometheus/prometheus/releases/download/v3.1.0/{{ prometheus }}.tar.gz"
+        dest: "/root/Programs"
+        remote_src: yes
+
+    - name: Rename directory
+      shell:
+        cmd: "mv /root/Programs/{{ prometheus }} /root/Programs/Prometheus"
+
+    - name: Copy Prometheus configuration file
+      copy:
+        src: "prometheus.yml"
+        dest: "/root/Programs/Prometheus"
+        mode: 0644
+
+#   - name: Start Prometheus server TODO: Need to make sure data is stored permanently
+#     shell:
+#       cmd: "/root/Programs/Prometheus/prometheus --config.file=/root/Programs/Prometheus/prometheus.yml &"

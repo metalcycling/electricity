@@ -1,0 +1,39 @@
+- name: Set the root environment
+  hosts: all
+  become: true
+  tasks:
+    - openssh_keypair:
+        path: "/root/.ssh/id_rsa"
+
+    - copy:
+        src: "/home/ubuntu/.ssh/authorized_keys"
+        dest: "/root/.ssh/authorized_keys"
+        owner: "root"
+        group: "root"
+        mode: 0600
+        remote_src: true
+      when: provider == "aws"
+
+    - authorized_key:
+        user: "root"
+        state: present
+        key: "{{ item }}"
+      loop:
+        - "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+    - git:
+        repo: "https://github.com/metalcycling/mubuntu.git"
+        dest: "/root/mubuntu"
+
+    - unarchive:
+        src: "/root/mubuntu/Container/files.tar"
+        dest: "/root"
+        remote_src: yes
+
+    - file:
+        dest: "/root/mubuntu"
+        state: absent
+
+    - file:
+        dest: "/root/Programs"
+        state: directory
