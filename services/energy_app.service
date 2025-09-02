@@ -1,0 +1,13 @@
+[Unit]
+Description=Energy consumption application
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/root/Application
+ExecStart=/usr/local/bin/gunicorn -w 1 -b 0.0.0.0:9091 energy_consumption:app
+
+[Install]
+WantedBy=multi-user.target
+

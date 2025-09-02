@@ -1,0 +1,19 @@
+[Unit]
+Description=Grafana Visualization Server
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/Programs/Grafana
+ExecStart=/root/Programs/Grafana/bin/grafana server \
+    --config /root/Programs/Grafana/conf/defaults.ini \
+    --homepath /root/Programs/Grafana \
+    --packaging standalone
+
+Restart=always
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=Prometheus Monitoring System
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/Programs/Prometheus
+ExecStart=/root/Programs/Prometheus/prometheus \
+    --config.file=/root/Programs/Prometheus/prometheus.yml \
+    --storage.tsdb.path=/root/Programs/Prometheus/data \
+    --web.listen-address=0.0.0.0:9090
+
+Restart=always
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
