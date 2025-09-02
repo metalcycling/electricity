@@ -1,0 +1,63 @@
+\documentclass{letter}
+
+\usepackage{float}
+\usepackage{caption}
+\usepackage{graphicx}
+
+\topmargin = -1in
+\textheight = 9in
+\oddsidemargin = 0pt
+\textwidth = 6.5in
+
+\makeatletter
+\renewcommand{\closing}[1]{\par\nobreak\vspace{\parskip}
+    \stopbreaks
+    \noindent
+    \ifx\@empty\fromaddress\else
+    \hspace*{\longindentation}\fi
+    \parbox{2\indentedwidth}{\raggedright
+        \ignorespaces #1\\[6\medskipamount]
+        \ifx\@empty\fromsig
+            \fromname
+        \else \fromsig \fi\strut}
+    \par}
+\makeatother
+
+\pagestyle{empty}
+
+\begin{document}
+    \signature
+    {
+        \vspace{-3.0em}
+        Management
+    }
+    \longindentation = 0pt
+    \let\raggedleft\raggedright
+
+    \begin{letter}{}
+        \begin{flushright}
+            \hfill {\large\bf <UNIT>} \\
+        \end{flushright} 
+
+        \vspace{1.0em}
+
+        Estimado inquilino,
+
+        Aqui encontrara el uso de electricidad por el mes de \textbf{<MONTH>} del año \textbf{<YEAR>}.
+
+        \setlength{\tabcolsep}{10pt}
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{lr}
+            \textbf{Consumo}        & <ENERGY> kWh \\
+            \textbf{Precio por kWh} & \$<PRICE> \\ \hline
+            \textbf{Valor a pagar}  & \textbf{\$<PAYMENT>}
+        \end{tabular}
+
+        \begin{center}
+            \includegraphics[width = 6.5in]{.consumption.pdf}
+        \end{center}
+
+
+        \closing{Cordialmente,}
+    \end{letter}
+\end{document}
