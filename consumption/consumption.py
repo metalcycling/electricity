@@ -16,11 +16,13 @@ from months import *
 
 # %% Check command line arguments
 
-assert len(sys.argv) == 4, "Not enough arguments: consumption.py <month> <year> <unit>"
+assert len(sys.argv) >= 5, "Not enough arguments: consumption.py <house> <month> <year> <unit> (<day>)"
 
-month = sys.argv[1]
-year  = sys.argv[2]
-meter = sys.argv[3]
+house = sys.argv[1]
+month = sys.argv[2]
+year  = sys.argv[3]
+meter = sys.argv[4]
+day   = 1 if len(sys.argv) == 5 else int(sys.argv[5])
 
 assert meter in ["apt_101", "apt_102", "apt_103", "apt_104", "services"], "ERROR: Wrong unit provided"
 
@@ -31,11 +33,12 @@ prometheus = PrometheusConnect(url = prometheus_url)
 
 # %% Functions
 
-def get_consumption(meter, start, end):
+def get_consumption(house, meter, start, end):
     """
     Get power consumption data in kWh from 'start' to 'end'
 
     Args:
+    - house (str): House to bill
     - meter (str): Meter to query
     - start (str): Start time
     - end (str): End time
@@ -66,15 +69,24 @@ def get_consumption(meter, start, end):
     }
 
     for idx in range(len(intervals) - 1):
-        query = "atlantis_watts{meter=\"%s\"}[%ds] @ %f" % (
-            meter,
-            int(intervals[idx + 1] - intervals[idx]),
-            intervals[idx + 1],
-        )
+        if house == "8510":
+            query = "atlantis_watts{meter=\"%s\"}[%ds] @ %f" % (
+                meter,
+                int(intervals[idx + 1] - intervals[idx]),
+                intervals[idx + 1],
+            )
+
+        elif house == "2260":
+            query = "roja_watts{meter=\"%s\"}[%ds] @ %f" % (
+                meter,
+                int(intervals[idx + 1] - intervals[idx]),
+                intervals[idx + 1],
+            )
 
         circuits = prometheus.custom_query(query)
 
-        assert len(circuits) > 0, f"ERROR: Querying the database returned an empty list (query: '{query}')"
+        if len(circuits) == 0:
+            continue
 
         for circuit in circuits:
             if circuit["metric"]["circuit"] in consumption["power"]:
@@ -82,7 +94,7 @@ def get_consumption(meter, start, end):
             else:
                 consumption["power"][circuit["metric"]["circuit"]] = [np.array(circuit["values"], dtype = float)]
 
-        if meter == "apt_101" or meter == "apt_102":
+        if house == "8510" and meter == "apt_101" or meter == "apt_102":
             if meter == "apt_101":
                 query = "atlantis_watts{meter=\"services\",circuit=~\"ac_unit_3|ac_unit_4\"}[%ds] @ %f" % (
                     int(intervals[idx + 1] - intervals[idx]),
@@ -106,7 +118,7 @@ def get_consumption(meter, start, end):
 
             consumption["power"]["ac"][-1][:, 0] /= len(ac_circuits)
 
-        elif meter == "services":
+        elif house == "8510" and meter == "services":
             for circuit in ["ac_unit_1", "ac_unit_2", "ac_unit_3", "ac_unit_4"]:
                 consumption["power"].pop(circuit)
 
@@ -136,10 +148,10 @@ def get_consumption(meter, start, end):
 
     return consumption, (times["end"] - times["start"]).days
 
-start = f"{year}-{months[month]['number'] + 0:02d}-01T00:00:00+00:00"
+start = f"{year}-{months[month]['number'] + 0:02d}-{day:02d}T00:00:00+00:00"
 end   = f"{year}-{months[month]['number'] + 1:02d}-01T00:00:00+00:00" if month != "december" else f"{year + 1}-{months['january']['number']:02d}-01T00:00:00+00:00"
 
-consumption, num_days = get_consumption(meter, start, end)
+consumption, num_days = get_consumption(house, meter, start, end)
 
 for circuit, measurements in consumption["energy"].items():
     print(circuit, measurements[-1, -1])

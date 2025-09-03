@@ -3,32 +3,42 @@
 #
 # Generate bills for the apartments
 #
-# Usage: ./billing.sh <month> <year> <watts> <dollars>
-# 
-# Example: ./billing.sh march 2025 104.88
+# Usage: ./billing.sh <house> <month> <year> <watts> <dollars>
+#
+# Example: ./billing.sh 8510 march 2025 2450.0 104.88
 #
 
 set -e
 
+# Setup
+
+source ${HOME}/.venv/research/bin/activate
+
+rm -f template/.total.txt
+
+# Global variables
+
+declare -A houses
+
+houses["8510"]="apt_101 apt_102 apt_103 apt_104 services"
+houses["2260"]="apt_101 apt_102 apt_103 apt_104 services"
+
 # Parse inputs
 
-month=${1}
-year=${2}
-total_consumption=${3}
-total_payment=${4}
+house=${1}
+month=${2}
+year=${3}
+total_consumption=${4}
+total_payment=${5}
 price=$(python3 -c "print(f\"{${total_payment} / ${total_consumption}:.4f}\")")
 
 # Generate bills
 
-rm -f template/.total.txt
-
-source ${HOME}/.venv/research/bin/activate
-
-for unit in "apt_101" "apt_102" "apt_103" "apt_104" "services"
+for unit in ${houses[${house}]}
 do
-    echo "Generating the bill for '${unit}'..."
+    echo "Generating the bill for '${house}/${unit}'..."
 
-    python3 consumption.py ${month} ${year} ${unit}
+    python3 consumption.py ${house} ${month} ${year} ${unit}
 
     cd template
 
@@ -65,11 +75,11 @@ do
 
     cd ..
 
-    mkdir -p bills/${month}_${year}
-    mv template/bill.pdf bills/${month}_${year}/${unit}.pdf
+    mkdir -p bills/${month}_${year}/${house}
+    mv template/bill.pdf bills/${month}_${year}/${house}/${unit}.pdf
 
     if [[ ${unit} == "apt_104" ]]; then
-        mv bills/${month}_${year}/${unit}.pdf bills/${month}_${year}/studio.pdf
+        mv bills/${month}_${year}/${house}/${unit}.pdf bills/${month}_${year}/${house}/studio.pdf
     fi
 
     echo
