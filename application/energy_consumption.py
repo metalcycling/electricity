@@ -134,6 +134,23 @@ meters = {
                "water_heater": (481856, "99"),
         },
     },
+
+    "1641": {
+        "apt_102": {
+                 "unit_102_a": (516941, "16"),
+                 "unit_102_b": (516941, "15"),
+        },
+
+        "apt_103": {
+                 "unit_103_a": (516941, "14"),
+                 "unit_103_b": (516941, "13"),
+        },
+
+        "services": {
+                   "laundry_a": (516941, "1"),
+                   "laundry_b": (516941, "2"),
+        },
+    },
 }
 
 # %% Functions to gather data
@@ -162,6 +179,7 @@ def read_meter(property, apartment, circuit, device_usage):
 
 atlantis_watts = Gauge("atlantis_watts", "Instantaneous watts being consumed", ["meter", "circuit"])
 roja_watts = Gauge("roja_watts", "Instantaneous watts being consumed", ["meter", "circuit"])
+hacienda_watts = Gauge("hacienda_watts", "Instantaneous watts being consumed", ["meter", "circuit"])
 
 # %% Set the metric value periodically
 
@@ -185,6 +203,9 @@ def update_metrics():
 
                         elif property == "2260":
                             roja_watts.labels(meter=meter, circuit=circuit).set(watts)
+
+                        elif property == "1641":
+                            hacienda_watts.labels(meter=meter, circuit=circuit).set(watts)
 
         except Exception as e:
             print(f"Error updating metrics: {e}")
