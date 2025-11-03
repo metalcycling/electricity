@@ -83,6 +83,13 @@ def get_consumption(house, meter, start, end):
                 intervals[idx + 1],
             )
 
+        elif house == "1641":
+            query = "hacienda_watts{meter=\"%s\"}[%ds] @ %f" % (
+                meter,
+                int(intervals[idx + 1] - intervals[idx]),
+                intervals[idx + 1],
+            )
+
         circuits = prometheus.custom_query(query)
 
         if len(circuits) == 0:
@@ -94,7 +101,7 @@ def get_consumption(house, meter, start, end):
             else:
                 consumption["power"][circuit["metric"]["circuit"]] = [np.array(circuit["values"], dtype = float)]
 
-        if house == "8510" and meter == "apt_101" or meter == "apt_102":
+        if house == "8510" and (meter == "apt_101" or meter == "apt_102"):
             if meter == "apt_101":
                 query = "atlantis_watts{meter=\"services\",circuit=~\"ac_unit_3|ac_unit_4\"}[%ds] @ %f" % (
                     int(intervals[idx + 1] - intervals[idx]),
@@ -171,7 +178,7 @@ daily_energy = df.groupby("day")["energy"].agg(lambda x: x.iloc[-1] - x.iloc[0])
 
 accumulated_energy = daily_energy.cumsum()
 
-# Plot setup
+# %% Plot setup
 
 label_size = 16
 title_size = 18

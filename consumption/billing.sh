@@ -22,6 +22,7 @@ declare -A houses
 
 houses["8510"]="apt_101 apt_102 apt_103 apt_104 services"
 houses["2260"]="apt_101 apt_102 apt_103 apt_104 services"
+houses["1641"]="apt_102 apt_103 services"
 
 # Parse inputs
 
