@@ -152,8 +152,20 @@ meters = {
         },
 
         "services": {
-                   "laundry_a": (516941, "1"),
-                   "laundry_b": (516941, "2"),
+                  "laundry_a": (516941, "1"),
+                  "laundry_b": (516941, "2"),
+        },
+
+        "house": {
+               "water_heater": (532514, "3"),
+                     "fridge": (532514, "4"),
+                      "dryer": (532514, "5"),
+                     "washer": (532514, "6"),
+                 "sprinklers": (532514, "8"),
+        },
+
+        "love_room": {
+                   "bathroom": (532514, "7"),
         },
     },
 }
