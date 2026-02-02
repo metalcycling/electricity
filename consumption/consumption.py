@@ -156,7 +156,7 @@ def get_consumption(house, meter, start, end):
     return consumption, (times["end"] - times["start"]).days
 
 start = f"{year}-{months[month]['number'] + 0:02d}-{day:02d}T00:00:00+00:00"
-end   = f"{year}-{months[month]['number'] + 1:02d}-01T00:00:00+00:00" if month != "december" else f"{year + 1}-{months['january']['number']:02d}-01T00:00:00+00:00"
+end   = f"{year}-{months[month]['number'] + 1:02d}-01T00:00:00+00:00" if month != "december" else f"{int(year) + 1}-{months['january']['number']:02d}-01T00:00:00+00:00"
 
 consumption, num_days = get_consumption(house, meter, start, end)
 
